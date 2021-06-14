@@ -120,129 +120,12 @@ public class Main {
             vertices.put(-0.5f).put(0.5f).put(0.5f); // TLF
             vertices.put(0.2f).put(0.2f).put(0.6f);
 
-//            // FRONT
-//            vertices.put(-0.5f).put(-0.5f).put(0.5f); // x y z
-//            vertices.put(0.5f).put(0.1f).put(0.1f); // r g b
-//
-//            vertices.put(0.5f).put(-0.5f).put(0.5f);
-//            vertices.put(0.1f).put(0.5f).put(0.1f);
-//
-//            vertices.put(-0.5f).put(0.5f).put(0.5f);
-//            vertices.put(0.1f).put(0.1f).put(0.5f);
-//
-//            vertices.put(0.5f).put(0.5f).put(0.5f); // x y z
-//            vertices.put(0.1f).put(0.5f).put(0.1f); // r g b
-//
-//            vertices.put(-0.5f).put(0.5f).put(0.5f);
-//            vertices.put(0.1f).put(0.5f).put(0.1f);
-//
-//            vertices.put(0.5f).put(-0.5f).put(0.5f);
-//            vertices.put(0.1f).put(0.1f).put(0.5f);
-//
-//            // BACK
-//            vertices.put(-0.5f).put(-0.5f).put(-0.5f); // x y z
-//            vertices.put(0.5f).put(0.1f).put(0.1f); // r g b
-//
-//            vertices.put(0.5f).put(-0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.5f).put(0.1f);
-//
-//            vertices.put(-0.5f).put(0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.1f).put(0.5f);
-//
-//            vertices.put(0.5f).put(0.5f).put(-0.5f); // x y z
-//            vertices.put(0.5f).put(0.1f).put(0.1f); // r g b
-//
-//            vertices.put(-0.5f).put(0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.5f).put(0.1f);
-//
-//            vertices.put(0.5f).put(-0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.1f).put(0.5f);
-//
-//            // LEFT
-//            vertices.put(-0.5f).put(-0.5f).put(0.5f); // x y z
-//            vertices.put(0.5f).put(0.1f).put(0.1f); // r g b
-//
-//            vertices.put(-0.5f).put(0.5f).put(0.5f);
-//            vertices.put(0.1f).put(0.5f).put(0.1f);
-//
-//            vertices.put(-0.5f).put(-0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.1f).put(0.5f);
-//
-//            vertices.put(-0.5f).put(0.5f).put(-0.5f); // x y z
-//            vertices.put(0.5f).put(0.1f).put(0.1f); // r g b
-//
-//            vertices.put(-0.5f).put(-0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.5f).put(0.1f);
-//
-//            vertices.put(-0.5f).put(0.5f).put(0.5f);
-//            vertices.put(0.1f).put(0.1f).put(0.5f);
-//
-//            // RIGHT
-//            vertices.put(0.5f).put(-0.5f).put(0.5f); // x y z
-//            vertices.put(0.5f).put(0.1f).put(0.1f); // r g b
-//
-//            vertices.put(0.5f).put(-0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.5f).put(0.1f);
-//
-//            vertices.put(0.5f).put(0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.1f).put(0.5f);
-//
-//            vertices.put(0.5f).put(0.5f).put(0.5f); // x y z
-//            vertices.put(0.5f).put(0.1f).put(0.1f); // r g b
-//
-//            vertices.put(0.5f).put(-0.5f).put(0.5f);
-//            vertices.put(0.1f).put(0.5f).put(0.1f);
-//
-//            vertices.put(0.5f).put(0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.1f).put(0.5f);
-//
-//            // TOP
-//            vertices.put(-0.5f).put(0.5f).put(0.5f); // x y z
-//            vertices.put(0.5f).put(0.1f).put(0.1f); // r g b
-//
-//            vertices.put(0.5f).put(0.5f).put(0.5f);
-//            vertices.put(0.1f).put(0.5f).put(0.1f);
-//
-//            vertices.put(0.5f).put(0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.1f).put(0.5f);
-//
-//            vertices.put(-0.5f).put(0.5f).put(-0.5f); // x y z
-//            vertices.put(0.5f).put(0.1f).put(0.1f); // r g b
-//
-//            vertices.put(-0.5f).put(0.5f).put(0.5f);
-//            vertices.put(0.1f).put(0.5f).put(0.1f);
-//
-//            vertices.put(0.5f).put(0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.1f).put(0.5f);
-//
-//            // BOTTOM
-//            vertices.put(-0.5f).put(-0.5f).put(0.5f); // x y z
-//            vertices.put(0.5f).put(0.1f).put(0.1f); // r g b
-//
-//            vertices.put(0.5f).put(-0.5f).put(0.5f);
-//            vertices.put(0.1f).put(0.5f).put(0.1f);
-//
-//            vertices.put(0.5f).put(-0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.1f).put(0.5f);
-//
-//            vertices.put(-0.5f).put(-0.5f).put(-0.5f); // x y z
-//            vertices.put(0.5f).put(0.1f).put(0.1f); // r g b
-//
-//            vertices.put(-0.5f).put(-0.5f).put(0.5f);
-//            vertices.put(0.1f).put(0.5f).put(0.1f);
-//
-//            vertices.put(0.5f).put(-0.5f).put(-0.5f);
-//            vertices.put(0.1f).put(0.1f).put(0.5f);
-
             vertices.flip();
 
             int vboHandle = glGenBuffers();
             glBindBuffer(GL_ARRAY_BUFFER, vboHandle);
             glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
         }
-//        } finally {
-//            stack.pop();
-//        }
 
         int indicesCount = 6 * 2 * 3; // sides * triangles * indices per triangle
         try(MemoryStack stack = MemoryStack.stackPush()) {
@@ -279,8 +162,6 @@ public class Main {
         glCompileShader(vertexShaderHandle);
 
         int status = glGetShaderi(vertexShaderHandle, GL_COMPILE_STATUS);
-//        System.out.println(glGetShaderi(vertexShaderHandle, GL_INFO_LOG_LENGTH));
-//        System.out.println(glGetShaderInfoLog(vertexShaderHandle));
         if(status == GL_FALSE) {
             throw new RuntimeException("Failed to compile vertex shader");
         }
@@ -321,25 +202,30 @@ public class Main {
 
         int uniformModelHandle = glGetUniformLocation(shaderProgramHandle, "model");
         Matrix4f modelMatrix  = new Matrix4f();
+        FloatBuffer modelBuffer;
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer model = modelMatrix
+            modelBuffer = modelMatrix
 //                    .rotate(45, 1.0f, 1.0f, 0f)
                     .get(stack.mallocFloat(4 * 4));
-            glUniformMatrix4fv(uniformModelHandle, false, model);
+            glUniformMatrix4fv(uniformModelHandle, false, modelBuffer);
         }
 
         int uniformViewHandle = glGetUniformLocation(shaderProgramHandle, "view");
+        Matrix4f viewMatrix  = new Matrix4f().translate(1f, 0f, 0f);
+        FloatBuffer viewBuffer;
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer model = new Matrix4f()
+            viewBuffer = viewMatrix
                     .get(stack.mallocFloat(4 * 4));
-            glUniformMatrix4fv(uniformViewHandle, false, model);
+            glUniformMatrix4fv(uniformViewHandle, false, viewBuffer);
         }
 
         int uniformProjectionHandle = glGetUniformLocation(shaderProgramHandle, "projection");
         try (MemoryStack stack = MemoryStack.stackPush()) {
             float aspectRatio = 1920f / 1080f;
             FloatBuffer model = new Matrix4f()
-                    .ortho(-aspectRatio, aspectRatio, -1f, 1f, -1f, 1f)
+//                    .ortho(-aspectRatio, aspectRatio, -1f, 1f, -1f, 1f)
+                    .perspective((float) Math.toRadians(95.0f), aspectRatio, 0.01f, 100.0f)
+                    .translate(0f, 0f, -2f)
                     .get(stack.mallocFloat(4 * 4));
             glUniformMatrix4fv(uniformProjectionHandle, false, model);
         }
@@ -358,13 +244,17 @@ public class Main {
             if(timeAcc >= targetTime) {
                 timeAcc -= targetTime;
 
-                modelMatrix.rotate((float) (1f * targetTime), 1.0f, 0.3f, 0f);
-                try (MemoryStack stack = MemoryStack.stackPush()) {
-                    FloatBuffer model = modelMatrix
+                modelMatrix.rotateLocal((float) (1f * targetTime), 0.5f, 0f, 0f);
+//                try (MemoryStack stack = MemoryStack.stackPush()) {
+//                    FloatBuffer model = modelMatrix
 //                    .rotate(45, 1.0f, 1.0f, 0f)
-                            .get(stack.mallocFloat(4 * 4));
-                    glUniformMatrix4fv(uniformModelHandle, false, model);
-                }
+                modelMatrix.get(modelBuffer);
+                glUniformMatrix4fv(uniformModelHandle, false, modelBuffer);
+
+                viewMatrix.rotateLocal((float) (1f * targetTime), 0f, 0.5f, 0f);
+                viewMatrix.get(viewBuffer);
+                glUniformMatrix4fv(uniformViewHandle, false, viewBuffer);
+//                }
             }
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
