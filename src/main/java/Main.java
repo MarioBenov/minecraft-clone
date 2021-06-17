@@ -1,13 +1,16 @@
 import org.joml.Matrix4f;
+import org.joml.Vector2d;
+import org.joml.Vector3f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.Random;
+import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL32.*;
@@ -72,7 +75,53 @@ public class Main {
 
         glfwMakeContextCurrent(window);
         glfwShowWindow(window);
+
+//        glfwSetKeyCallback(window, new GLFWKeyCallback() {
+//            @Override
+//            public void invoke(long l, int i, int i1, int i2, int i3) {
+//
+//            }
+//        });
+//        int isPressed_D = glfwGetKey(window, GLFW_KEY_D);
+
+        glfwSetKeyCallback(window, (long window, int key, int scancode, int action, int mods) -> {
+            System.out.println(key + " " + action);
+            if(action == GLFW_PRESS) {
+                pressedKeys.add(key);
+            } else if(action == GLFW_RELEASE) {
+                pressedKeys.remove(key);
+            }
+
+//            if(action != GLFW_RELEASE && key == GLFW_KEY_D) {
+//                // move camera right
+////                cameraTransform.translate(-0.2f, 0f, 0f);
+//                pressedKeys.put(GLFW_KEY_D, true);
+//            } else if(action == GLFW_RELEASE && key == GLFW_KEY_D) {
+//                pressedKeys.remove(GLFW_KEY_D);
+//            }
+//            if(action != GLFW_RELEASE && key == GLFW_KEY_A) {
+//                // move camera left
+//                cameraTransform.translate(0.2f, 0f, 0f);
+//            }
+        });
+
+        glfwSetCursorPosCallback(window, (long window, double x, double y) -> {
+            Vector2d newPos = new Vector2d(x, y);
+            Vector2d offset = cursorPos.sub(newPos);
+            System.out.println(offset);
+            cursorPos = newPos;
+
+            cameraTransform.rotate((float) (0.01f * offset.x), 0f, 1f, 0f);
+            cameraTransform.rotate((float) (0.01f * offset.y), 1f, 0f, 0f);
+        });
     }
+
+    private final float aspectRatio = 1920f / 1080f;
+    private Matrix4f cameraTransform = new Matrix4f()
+            .perspective((float) Math.toRadians(95.0f), aspectRatio, 0.01f, 100.0f)
+            .translate(0f, 0f, -2f);
+    private Set<Integer> pressedKeys = new TreeSet<>();
+    private Vector2d cursorPos = new Vector2d();
 
     private void initGl() {
         GL.createCapabilities();
@@ -220,14 +269,16 @@ public class Main {
         }
 
         int uniformProjectionHandle = glGetUniformLocation(shaderProgramHandle, "projection");
+        FloatBuffer cameraBuffer;
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            float aspectRatio = 1920f / 1080f;
-            FloatBuffer model = new Matrix4f()
-//                    .ortho(-aspectRatio, aspectRatio, -1f, 1f, -1f, 1f)
-                    .perspective((float) Math.toRadians(95.0f), aspectRatio, 0.01f, 100.0f)
-                    .translate(0f, 0f, -2f)
-                    .get(stack.mallocFloat(4 * 4));
-            glUniformMatrix4fv(uniformProjectionHandle, false, model);
+            cameraBuffer = cameraTransform.get(stack.mallocFloat(4 * 4));
+//            float aspectRatio = 1920f / 1080f;
+//            cameraBuffer = new Matrix4f()
+////                    .ortho(-aspectRatio, aspectRatio, -1f, 1f, -1f, 1f)
+//                    .perspective((float) Math.toRadians(95.0f), aspectRatio, 0.01f, 100.0f)
+//                    .translate(0f, 0f, -2f)
+//                    .get(stack.mallocFloat(4 * 4));
+            glUniformMatrix4fv(uniformProjectionHandle, false, cameraBuffer);
         }
 
 
@@ -244,17 +295,30 @@ public class Main {
             if(timeAcc >= targetTime) {
                 timeAcc -= targetTime;
 
-                modelMatrix.rotateLocal((float) (1f * targetTime), 0.5f, 0f, 0f);
-//                try (MemoryStack stack = MemoryStack.stackPush()) {
-//                    FloatBuffer model = modelMatrix
-//                    .rotate(45, 1.0f, 1.0f, 0f)
-                modelMatrix.get(modelBuffer);
-                glUniformMatrix4fv(uniformModelHandle, false, modelBuffer);
+//                modelMatrix.rotateLocal((float) (0.5f * targetTime), 1f, 0f, 0f);
+//                viewMatrix.rotateLocal((float) (0.5f * targetTime), 0f, 1f, 0f);
 
-                viewMatrix.rotateLocal((float) (1f * targetTime), 0f, 0.5f, 0f);
-                viewMatrix.get(viewBuffer);
-                glUniformMatrix4fv(uniformViewHandle, false, viewBuffer);
-//                }
+                Vector3f cameraDir = new Vector3f();
+                if(pressedKeys.contains(GLFW_KEY_D)) cameraDir.x = -2f;
+                if(pressedKeys.contains(GLFW_KEY_A)) cameraDir.x = 2f;
+
+                if(pressedKeys.contains(GLFW_KEY_S)) cameraDir.z = -2f;
+                if(pressedKeys.contains(GLFW_KEY_W)) cameraDir.z = 2f;
+
+                if(pressedKeys.contains(GLFW_KEY_Q)) cameraDir.y = -2f;
+                if(pressedKeys.contains(GLFW_KEY_E)) cameraDir.y = 2f;
+
+                cameraTransform.translate(cameraDir.mul((float) targetTime));
+
+                try (MemoryStack stack = MemoryStack.stackPush()) {
+                    modelBuffer = modelMatrix.get(stack.mallocFloat(4 * 4));
+                    viewBuffer = viewMatrix.get(stack.mallocFloat(4 * 4));
+                    cameraBuffer = cameraTransform.get(stack.mallocFloat(4 * 4));
+
+                    glUniformMatrix4fv(uniformModelHandle, false, modelBuffer);
+                    glUniformMatrix4fv(uniformViewHandle, false, viewBuffer);
+                    glUniformMatrix4fv(uniformProjectionHandle, false, cameraBuffer);
+                }
             }
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
