@@ -66,62 +66,19 @@ public class Main {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
         GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-//        PointerBuffer monitors = glfwGetMonitors();
         window = glfwCreateWindow(vidMode.width(), vidMode.height(), "Minecraft clone", NULL, NULL);
         if(window == NULL)
             throw new IllegalStateException("failed to create window");
 
         glfwSetWindowPos(window, 1920 + 20, 20);
 
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
         glfwMakeContextCurrent(window);
         glfwShowWindow(window);
-
-//        glfwSetKeyCallback(window, new GLFWKeyCallback() {
-//            @Override
-//            public void invoke(long l, int i, int i1, int i2, int i3) {
-//
-//            }
-//        });
-//        int isPressed_D = glfwGetKey(window, GLFW_KEY_D);
-
-        glfwSetKeyCallback(window, (long window, int key, int scancode, int action, int mods) -> {
-            System.out.println(key + " " + action);
-            if(action == GLFW_PRESS) {
-                pressedKeys.add(key);
-            } else if(action == GLFW_RELEASE) {
-                pressedKeys.remove(key);
-            }
-
-//            if(action != GLFW_RELEASE && key == GLFW_KEY_D) {
-//                // move camera right
-////                cameraTransform.translate(-0.2f, 0f, 0f);
-//                pressedKeys.put(GLFW_KEY_D, true);
-//            } else if(action == GLFW_RELEASE && key == GLFW_KEY_D) {
-//                pressedKeys.remove(GLFW_KEY_D);
-//            }
-//            if(action != GLFW_RELEASE && key == GLFW_KEY_A) {
-//                // move camera left
-//                cameraTransform.translate(0.2f, 0f, 0f);
-//            }
-        });
-
-        glfwSetCursorPosCallback(window, (long window, double x, double y) -> {
-            Vector2d newPos = new Vector2d(x, y);
-            Vector2d offset = cursorPos.sub(newPos);
-            System.out.println(offset);
-            cursorPos = newPos;
-
-            cameraTransform.rotate((float) (0.01f * offset.x), 0f, 1f, 0f);
-            cameraTransform.rotate((float) (0.01f * offset.y), 1f, 0f, 0f);
-        });
     }
 
-    private final float aspectRatio = 1920f / 1080f;
-    private Matrix4f cameraTransform = new Matrix4f()
-            .perspective((float) Math.toRadians(95.0f), aspectRatio, 0.01f, 100.0f)
-            .translate(0f, 0f, -2f);
-    private Set<Integer> pressedKeys = new TreeSet<>();
-    private Vector2d cursorPos = new Vector2d();
+    private Camera camera;
 
     private void initGl() {
         GL.createCapabilities();
@@ -137,74 +94,35 @@ public class Main {
     }
 
     private void mainLoop() {
-        int vaoHandle = glGenVertexArrays();
-        glBindVertexArray(vaoHandle);
+        camera = new Camera(window, 1920f / 1080f);
 
-//        int vertexCount = 6 * 2 * 3; // sides * faces per side * points per face
-        int vertexCount = 8;
-        try(MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer vertices = stack.mallocFloat(vertexCount * 3 * 2); // points * values per attribute * number of attributes
+        List<Block> blocks = new ArrayList<>(3);
 
-            vertices.put(-0.5f).put(-0.5f).put(-0.5f); // BLK
-            vertices.put(0.5f).put(0.1f).put(0.1f);
+        Block b1 = new Block();
+        Block b2 = new Block();
+        Block b3 = new Block();
 
-            vertices.put(0.5f).put(-0.5f).put(-0.5f); // BRK
-            vertices.put(0.1f).put(0.5f).put(0.1f);
+        b1.getTransform().translate(1f, 0.5f, 0f);
+        b2.getTransform().translate(2f, 0.5f, 0f);
+        b3.getTransform().translate(1f, 1.5f, 0f);
 
-            vertices.put(0.5f).put(0.5f).put(-0.5f); // TRK
-            vertices.put(0.1f).put(0.1f).put(0.5f);
+        blocks.add(b1);
+        blocks.add(b2);
+        blocks.add(b3);
 
-            vertices.put(-0.5f).put(0.5f).put(-0.5f); // TLK
-            vertices.put(0.2f).put(0.2f).put(0.2f);
+        List<Line> lines = new ArrayList<>(3);
 
-            vertices.put(-0.5f).put(-0.5f).put(0.5f); // BLF
-            vertices.put(0.2f).put(0.6f).put(0.2f);
+        Line l1 = new Line(new Vector3f(1f, 0f, 0f), new Vector3f(1f, 0f, 0f));
+        Line l2 = new Line(new Vector3f(0f, 1f, 0f), new Vector3f(0f, 1f, 0f));
+        Line l3 = new Line(new Vector3f(0f, 0f, 1f), new Vector3f(0f, 0f, 1f));
 
-            vertices.put(0.5f).put(-0.5f).put(0.5f); // BRF
-            vertices.put(0.6f).put(0.2f).put(0.2f);
+//        b1.getTransform().translate(0.5f, 0.5f, 0f);
+//        b2.getTransform().translate(1.5f, 0.5f, 0f);
+//        b3.getTransform().translate(0.5f, 1.5f, 0f);
 
-            vertices.put(0.5f).put(0.5f).put(0.5f); // TRF
-            vertices.put(0.3f).put(0.3f).put(0.3f);
-
-            vertices.put(-0.5f).put(0.5f).put(0.5f); // TLF
-            vertices.put(0.2f).put(0.2f).put(0.6f);
-
-            vertices.flip();
-
-            int vboHandle = glGenBuffers();
-            glBindBuffer(GL_ARRAY_BUFFER, vboHandle);
-            glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
-        }
-
-        int indicesCount = 6 * 2 * 3; // sides * triangles * indices per triangle
-        try(MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer indices = stack.mallocInt(indicesCount);
-
-            indices.put(0).put(1).put(2);
-            indices.put(2).put(3).put(0);
-
-            indices.put(1).put(5).put(6);
-            indices.put(6).put(2).put(1);
-
-            indices.put(5).put(4).put(7);
-            indices.put(7).put(6).put(5);
-
-            indices.put(4).put(0).put(3);
-            indices.put(3).put(7).put(4);
-
-            indices.put(0).put(1).put(5);
-            indices.put(5).put(4).put(0);
-
-            indices.put(3).put(2).put(6);
-            indices.put(6).put(7).put(3);
-
-            indices.flip();
-
-            int indicesHandle = glGenBuffers();
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesHandle);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
-        }
-
+        lines.add(l1);
+        lines.add(l2);
+        lines.add(l3);
 
         int vertexShaderHandle = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShaderHandle, vertexShaderSource);
@@ -236,28 +154,23 @@ public class Main {
 
         glUseProgram(shaderProgramHandle);
 
+        for(Block b : blocks) {
+            b.initShader(shaderProgramHandle);
+        }
 
-        int FLOAT_SIZE = 4;
-
-        int posAttribHandle = glGetAttribLocation(shaderProgramHandle, "position");
-        glEnableVertexAttribArray(posAttribHandle);
-        glVertexAttribPointer(posAttribHandle, 3, GL_FLOAT, false, 6 * FLOAT_SIZE, 0);
-
-        int colorAttribHandle = glGetAttribLocation(shaderProgramHandle, "color");
-        glEnableVertexAttribArray(colorAttribHandle);
-        glVertexAttribPointer(colorAttribHandle, 3, GL_FLOAT, false, 6 * FLOAT_SIZE, 3 * FLOAT_SIZE);
-
-
+        for(Line l : lines) {
+            l.initShader(shaderProgramHandle);
+        }
 
         int uniformModelHandle = glGetUniformLocation(shaderProgramHandle, "model");
-        Matrix4f modelMatrix  = new Matrix4f();
-        FloatBuffer modelBuffer;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            modelBuffer = modelMatrix
-//                    .rotate(45, 1.0f, 1.0f, 0f)
-                    .get(stack.mallocFloat(4 * 4));
-            glUniformMatrix4fv(uniformModelHandle, false, modelBuffer);
-        }
+//        Matrix4f modelMatrix  = new Matrix4f();
+//        FloatBuffer modelBuffer;
+//        try (MemoryStack stack = MemoryStack.stackPush()) {
+//            modelBuffer = b2.getTransform()
+////                    .rotate(45, 1.0f, 1.0f, 0f)
+//                    .get(stack.mallocFloat(4 * 4));
+//            glUniformMatrix4fv(uniformModelHandle, false, modelBuffer);
+//        }
 
         int uniformViewHandle = glGetUniformLocation(shaderProgramHandle, "view");
         Matrix4f viewMatrix  = new Matrix4f().translate(1f, 0f, 0f);
@@ -271,7 +184,7 @@ public class Main {
         int uniformProjectionHandle = glGetUniformLocation(shaderProgramHandle, "projection");
         FloatBuffer cameraBuffer;
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            cameraBuffer = cameraTransform.get(stack.mallocFloat(4 * 4));
+            cameraBuffer = camera.getTransform().get(stack.mallocFloat(4 * 4));
 //            float aspectRatio = 1920f / 1080f;
 //            cameraBuffer = new Matrix4f()
 ////                    .ortho(-aspectRatio, aspectRatio, -1f, 1f, -1f, 1f)
@@ -295,28 +208,15 @@ public class Main {
             if(timeAcc >= targetTime) {
                 timeAcc -= targetTime;
 
-//                modelMatrix.rotateLocal((float) (0.5f * targetTime), 1f, 0f, 0f);
-//                viewMatrix.rotateLocal((float) (0.5f * targetTime), 0f, 1f, 0f);
-
-                Vector3f cameraDir = new Vector3f();
-                if(pressedKeys.contains(GLFW_KEY_D)) cameraDir.x = -2f;
-                if(pressedKeys.contains(GLFW_KEY_A)) cameraDir.x = 2f;
-
-                if(pressedKeys.contains(GLFW_KEY_S)) cameraDir.z = -2f;
-                if(pressedKeys.contains(GLFW_KEY_W)) cameraDir.z = 2f;
-
-                if(pressedKeys.contains(GLFW_KEY_Q)) cameraDir.y = -2f;
-                if(pressedKeys.contains(GLFW_KEY_E)) cameraDir.y = 2f;
-
-                cameraTransform.translate(cameraDir.mul((float) targetTime));
+                camera.update(targetTime);
 
                 try (MemoryStack stack = MemoryStack.stackPush()) {
-                    modelBuffer = modelMatrix.get(stack.mallocFloat(4 * 4));
-                    viewBuffer = viewMatrix.get(stack.mallocFloat(4 * 4));
-                    cameraBuffer = cameraTransform.get(stack.mallocFloat(4 * 4));
+//                    modelBuffer = b2.getTransform().get(stack.mallocFloat(4 * 4));
+//                    viewBuffer = viewMatrix.get(stack.mallocFloat(4 * 4));
+                    cameraBuffer = camera.getTransform().get(stack.mallocFloat(4 * 4));
 
-                    glUniformMatrix4fv(uniformModelHandle, false, modelBuffer);
-                    glUniformMatrix4fv(uniformViewHandle, false, viewBuffer);
+//                    glUniformMatrix4fv(uniformModelHandle, false, modelBuffer);
+//                    glUniformMatrix4fv(uniformViewHandle, false, viewBuffer);
                     glUniformMatrix4fv(uniformProjectionHandle, false, cameraBuffer);
                 }
             }
@@ -324,14 +224,33 @@ public class Main {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 //            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-            glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, 0);
+            for(Block b : blocks) {
+                b.bind();
+                try (MemoryStack stack = MemoryStack.stackPush()) {
+                    FloatBuffer modelBuffer = b.getTransform().get(stack.mallocFloat(4 * 4));
+                    glUniformMatrix4fv(uniformModelHandle, false, modelBuffer);
+                }
+                glDrawElements(GL_TRIANGLES, Block.indicesCount, GL_UNSIGNED_INT, 0);
+                b.unbind();
+            }
+
+            for(Line l : lines) {
+                l.bind();
+                try (MemoryStack stack = MemoryStack.stackPush()) {
+                    FloatBuffer modelBuffer = l.getTransform().get(stack.mallocFloat(4 * 4));
+                    glUniformMatrix4fv(uniformModelHandle, false, modelBuffer);
+                }
+//                glDrawElements(GL_TRIANGLES, Block.indicesCount, GL_UNSIGNED_INT, 0);
+                glDrawArrays(GL_LINES, 0, Line.vertexCount);
+                l.unbind();
+            }
 
             glfwSwapBuffers(window);
 
             glfwPollEvents();
         }
 
-        glDeleteVertexArrays(vaoHandle);
+//        glDeleteVertexArrays(vaoHandle);
     }
 
     private void cleanup() {
