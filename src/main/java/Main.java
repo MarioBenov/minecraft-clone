@@ -8,8 +8,11 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -17,34 +20,34 @@ import static org.lwjgl.opengl.GL32.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class Main {
-    private final String vertexShaderSource = "#version 150 core\n" +
-            "        \n" +
-            "in vec3 position;\n" +
-            "in vec3 color;\n" +
-            "\n" +
-            "out vec3 vertexColor;\n" +
-            "\n" +
-            "uniform mat4 model;\n" +
-            "uniform mat4 view;\n" +
-            "uniform mat4 projection;\n" +
-            "\n" +
-            "void main() {\n" +
-            "    vertexColor = color;\n" +
-           // "    vertexColor = vec3(0.1, 0.24, 0.15);\n" +
-            "    mat4 mvp = projection * view * model;\n" +
-            "    gl_Position = mvp * vec4(position, 1.0);\n" +
-            "}";
-    private final String fragmentShaderSource = "#version 150 core\n" +
-            "\n" +
-            "in vec3 vertexColor;\n" +
-            "\n" +
-            "out vec4 fragColor;\n" +
-            "\n" +
-            "void main() {\n" +
-            "    fragColor = vec4(vertexColor, 1.0);\n" +
-            "}";
+//    private final String vertexShaderSource = "#version 150 core\n" +
+//            "        \n" +
+//            "in vec3 position;\n" +
+//            "in vec3 color;\n" +
+//            "\n" +
+//            "out vec3 vertexColor;\n" +
+//            "\n" +
+//            "uniform mat4 model;\n" +
+//            "uniform mat4 view;\n" +
+//            "uniform mat4 projection;\n" +
+//            "\n" +
+//            "void main() {\n" +
+//            "    vertexColor = color;\n" +
+//           // "    vertexColor = vec3(0.1, 0.24, 0.15);\n" +
+//            "    mat4 mvp = projection * view * model;\n" +
+//            "    gl_Position = mvp * vec4(position, 1.0);\n" +
+//            "}";
+//    private final String fragmentShaderSource = "#version 150 core\n" +
+//            "\n" +
+//            "in vec3 vertexColor;\n" +
+//            "\n" +
+//            "out vec4 fragColor;\n" +
+//            "\n" +
+//            "void main() {\n" +
+//            "    fragColor = vec4(vertexColor, 1.0);\n" +
+//            "}";
 
-    private void run() {
+    private void run() throws IOException {
         init();
         mainLoop();
         cleanup();
@@ -93,7 +96,7 @@ public class Main {
         initGl();
     }
 
-    private void mainLoop() {
+    private void mainLoop() throws IOException {
         camera = new Camera(window, 1920f / 1080f);
 
         List<Block> blocks = new ArrayList<>(3);
@@ -123,6 +126,17 @@ public class Main {
         lines.add(l1);
         lines.add(l2);
         lines.add(l3);
+
+
+        String vertexShaderSource = new String(
+                Files.readAllBytes(
+                        Paths.get(
+                                getClass().getResource("shaders/basic.vert").getFile().substring(1)
+                        )
+                )
+        );
+        String fragmentShaderSource = new String(Files.readAllBytes(Paths.get(getClass().getResource("shaders/basic.frag").getFile().substring(1))));
+
 
         int vertexShaderHandle = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShaderHandle, vertexShaderSource);
@@ -173,26 +187,26 @@ public class Main {
 //        }
 
         int uniformViewHandle = glGetUniformLocation(shaderProgramHandle, "view");
-        Matrix4f viewMatrix  = new Matrix4f().translate(1f, 0f, 0f);
-        FloatBuffer viewBuffer;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            viewBuffer = viewMatrix
-                    .get(stack.mallocFloat(4 * 4));
-            glUniformMatrix4fv(uniformViewHandle, false, viewBuffer);
-        }
+//        Matrix4f viewMatrix  = new Matrix4f().translate(1f, 0f, 0f);
+//        FloatBuffer viewBuffer;
+//        try (MemoryStack stack = MemoryStack.stackPush()) {
+//            viewBuffer = viewMatrix
+//                    .get(stack.mallocFloat(4 * 4));
+//            glUniformMatrix4fv(uniformViewHandle, false, viewBuffer);
+//        }
 
         int uniformProjectionHandle = glGetUniformLocation(shaderProgramHandle, "projection");
-        FloatBuffer cameraBuffer;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            cameraBuffer = camera.getTransform().get(stack.mallocFloat(4 * 4));
-//            float aspectRatio = 1920f / 1080f;
-//            cameraBuffer = new Matrix4f()
-////                    .ortho(-aspectRatio, aspectRatio, -1f, 1f, -1f, 1f)
-//                    .perspective((float) Math.toRadians(95.0f), aspectRatio, 0.01f, 100.0f)
-//                    .translate(0f, 0f, -2f)
-//                    .get(stack.mallocFloat(4 * 4));
-            glUniformMatrix4fv(uniformProjectionHandle, false, cameraBuffer);
-        }
+//        FloatBuffer cameraBuffer;
+//        try (MemoryStack stack = MemoryStack.stackPush()) {
+//            cameraBuffer = camera.getTransform().get(stack.mallocFloat(4 * 4));
+////            float aspectRatio = 1920f / 1080f;
+////            cameraBuffer = new Matrix4f()
+//////                    .ortho(-aspectRatio, aspectRatio, -1f, 1f, -1f, 1f)
+////                    .perspective((float) Math.toRadians(95.0f), aspectRatio, 0.01f, 100.0f)
+////                    .translate(0f, 0f, -2f)
+////                    .get(stack.mallocFloat(4 * 4));
+//            glUniformMatrix4fv(uniformProjectionHandle, false, cameraBuffer);
+//        }
 
 
 //        Random rand = new Random();
@@ -213,11 +227,12 @@ public class Main {
                 try (MemoryStack stack = MemoryStack.stackPush()) {
 //                    modelBuffer = b2.getTransform().get(stack.mallocFloat(4 * 4));
 //                    viewBuffer = viewMatrix.get(stack.mallocFloat(4 * 4));
-                    cameraBuffer = camera.getTransform().get(stack.mallocFloat(4 * 4));
+                    FloatBuffer cameraTransform = camera.getTransform().get(stack.mallocFloat(4 * 4));
+                    FloatBuffer cameraProjection = camera.getProjection().get(stack.mallocFloat(4 * 4));
 
 //                    glUniformMatrix4fv(uniformModelHandle, false, modelBuffer);
-//                    glUniformMatrix4fv(uniformViewHandle, false, viewBuffer);
-                    glUniformMatrix4fv(uniformProjectionHandle, false, cameraBuffer);
+                    glUniformMatrix4fv(uniformViewHandle, false, cameraTransform);
+                    glUniformMatrix4fv(uniformProjectionHandle, false, cameraProjection);
                 }
             }
 
@@ -259,6 +274,10 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        new Main().run();
+        try {
+            new Main().run();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

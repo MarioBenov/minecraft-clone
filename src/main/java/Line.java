@@ -21,6 +21,7 @@ public class Line {
     private int vboHandle = 0;
     private int posAttribHandle = 0;
     private int colorAttribHandle = 0;
+    private int uniUseTexture = 0;
 
     private Matrix4f transform  = new Matrix4f();
 
@@ -54,6 +55,7 @@ public class Line {
     public void bind() {
         glBindVertexArray(vaoHandle);
         glBindBuffer(GL_ARRAY_BUFFER, vboHandle);
+        glUniform1i(uniUseTexture, 0);
     }
 
     public void unbind() {
@@ -70,6 +72,9 @@ public class Line {
         colorAttribHandle = glGetAttribLocation(shaderProgramHandle, "color");
         glEnableVertexAttribArray(colorAttribHandle);
         glVertexAttribPointer(colorAttribHandle, 3, GL_FLOAT, false, 6 * FLOAT_SIZE, 3 * FLOAT_SIZE);
+
+        uniUseTexture = glGetUniformLocation(shaderProgramHandle, "useTexture");
+        glUniform1i(uniUseTexture, 1);
 
         unbind();
     }
