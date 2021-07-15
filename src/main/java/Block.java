@@ -24,9 +24,10 @@ public class Block {
     private int vboHandle = 0;
     private int indicesHandle = 0;
     private int posAttribHandle = 0;
-//    private int colorAttribHandle = 0;
     private int uniUseTexture = 0;
+    private int uniUseBlinn = 0;
     private int textureAttribHandle = 0;
+    private int normalAttribHandle = 0;
 
     private Matrix4f transform  = new Matrix4f();
 
@@ -41,42 +42,58 @@ public class Block {
         glBindVertexArray(vaoHandle);
 
         try(MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer vertices = stack.mallocFloat(vertexCount * (3 + 2)); // points * values per attribute * number of attributes
+            FloatBuffer vertices = stack.mallocFloat(vertexCount * (3 + 2 + 3)); // points * values per attribute * number of attributes
 
             vertices.put(-0.5f).put(-0.5f).put(-0.5f); // BLK
+            vertices.put(-1f).put(-1f).put(1f);
             vertices.put(0f).put(0f);
             vertices.put(-0.5f).put(0.5f).put(-0.5f); // TLK
+            vertices.put(-1f).put(1f).put(1f);
             vertices.put(0f).put(1f);
             vertices.put(0.5f).put(-0.5f).put(-0.5f); // BRK
+            vertices.put(1f).put(-1f).put(1f);
             vertices.put(1f).put(0f);
             vertices.put(0.5f).put(0.5f).put(-0.5f); // TRK
+            vertices.put(1f).put(1f).put(1f);
             vertices.put(1f).put(1f);
 
             vertices.put(-0.5f).put(-0.5f).put(0.5f); // BLF
+            vertices.put(-1f).put(-1f).put(-1f);
             vertices.put(1f).put(0f);
             vertices.put(-0.5f).put(0.5f).put(0.5f); // TLF
+            vertices.put(-1f).put(1f).put(-1f);
             vertices.put(1f).put(1f);
             vertices.put(0.5f).put(-0.5f).put(0.5f); // BRF
+            vertices.put(1f).put(-1f).put(-1f);
             vertices.put(0f).put(0f);
             vertices.put(0.5f).put(0.5f).put(0.5f); // TRF
+            vertices.put(1f).put(1f).put(-1f);
             vertices.put(0f).put(1f);
 
             vertices.put(-0.5f).put(0.5f).put(-0.5f); // TLK
+            vertices.put(-1f).put(1f).put(1f);
             vertices.put(0f).put(0f);
             vertices.put(0.5f).put(0.5f).put(-0.5f); // TRK
+            vertices.put(1f).put(1f).put(1f);
             vertices.put(0f).put(1f);
             vertices.put(-0.5f).put(0.5f).put(0.5f); // TLF
+            vertices.put(-1f).put(1f).put(-1f);
             vertices.put(1f).put(0f);
             vertices.put(0.5f).put(0.5f).put(0.5f); // TRF
+            vertices.put(1f).put(1f).put(-1f);
             vertices.put(1f).put(1f);
 
             vertices.put(0.5f).put(-0.5f).put(-0.5f); // BRK
+            vertices.put(1f).put(-1f).put(1f);
             vertices.put(0f).put(0f);
             vertices.put(-0.5f).put(-0.5f).put(-0.5f); // BLK
+            vertices.put(-1f).put(-1f).put(1f);
             vertices.put(0f).put(1f);
             vertices.put(0.5f).put(-0.5f).put(0.5f); // BRF
+            vertices.put(1f).put(-1f).put(-1f);
             vertices.put(1f).put(0f);
             vertices.put(-0.5f).put(-0.5f).put(0.5f); // BLF
+            vertices.put(-1f).put(-1f).put(-1f);
             vertices.put(1f).put(1f);
 
             vertices.flip();
@@ -150,9 +167,12 @@ public class Block {
         glBindVertexArray(vaoHandle);
         glBindBuffer(GL_ARRAY_BUFFER, vboHandle);
         glUniform1i(uniUseTexture, 1);
+        glUniform1i(uniUseBlinn, 1);
     }
 
     public void unbind() {
+        glUniform1i(uniUseTexture, 0);
+        glUniform1i(uniUseBlinn, 0);
         glBindVertexArray(0);
     }
 
@@ -161,15 +181,15 @@ public class Block {
 
         posAttribHandle = glGetAttribLocation(shaderProgramHandle, "position");
         glEnableVertexAttribArray(posAttribHandle);
-        glVertexAttribPointer(posAttribHandle, 3, GL_FLOAT, false, (3 + 2) * FLOAT_SIZE, 0);
-
-//        colorAttribHandle = glGetAttribLocation(shaderProgramHandle, "color");
-//        glEnableVertexAttribArray(colorAttribHandle);
-//        glVertexAttribPointer(colorAttribHandle, 3, GL_FLOAT, false, 6 * FLOAT_SIZE, 3 * FLOAT_SIZE);
+        glVertexAttribPointer(posAttribHandle, 3, GL_FLOAT, false, (3 + 2 + 3) * FLOAT_SIZE, 0);
 
         textureAttribHandle = glGetAttribLocation(shaderProgramHandle, "texcoord");
         glEnableVertexAttribArray(textureAttribHandle);
-        glVertexAttribPointer(textureAttribHandle, 2, GL_FLOAT, false, (3 + 2) * Float.BYTES, 3 * Float.BYTES);
+        glVertexAttribPointer(textureAttribHandle, 2, GL_FLOAT, false, (3 + 2 + 3) * Float.BYTES, (3 + 3) * Float.BYTES);
+
+        normalAttribHandle = glGetAttribLocation(shaderProgramHandle, "normal");
+        glEnableVertexAttribArray(normalAttribHandle);
+        glVertexAttribPointer(normalAttribHandle, 3, GL_FLOAT, false, (3 + 2 + 3) * FLOAT_SIZE, 3 * Float.BYTES);
 
         int uniTex = glGetUniformLocation(shaderProgramHandle, "myTexImage");
         glUniform1i(uniTex, 0);
@@ -179,6 +199,8 @@ public class Block {
 
         uniUseTexture = glGetUniformLocation(shaderProgramHandle, "useTexture");
         glUniform1i(uniUseTexture, 1);
+        uniUseBlinn = glGetUniformLocation(shaderProgramHandle, "useBlinn");
+        glUniform1i(uniUseBlinn, 1);
 
         unbind();
     }

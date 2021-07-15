@@ -3,13 +3,10 @@ import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
@@ -23,7 +20,7 @@ public class Line {
     private int colorAttribHandle = 0;
     private int uniUseTexture = 0;
 
-    private Matrix4f transform  = new Matrix4f();
+    private final Matrix4f transform  = new Matrix4f();
 
     public Matrix4f getTransform() {
         return transform;
